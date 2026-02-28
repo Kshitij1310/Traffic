@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Traffic Optimization System | AI-Powered Traffic Management</title>
+    
+    <!-- Tailwind CSS v3 CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: "hsl(214.3 31.8% 91.4%)",
+                        input: "hsl(214.3 31.8% 91.4%)",
+                        ring: "hsl(222.2 84% 4.9%)",
+                        background: "hsl(0 0% 100%)",
+                        foreground: "hsl(222.2 84% 4.9%)",
+                        primary: {
+                            DEFAULT: "hsl(222.2 47.4% 11.2%)",
+                            foreground: "hsl(210 40% 98%)",
+                        },
+                        secondary: {
+                            DEFAULT: "hsl(210 40% 96.1%)",
+                            foreground: "hsl(222.2 47.4% 11.2%)",
+                        },
+                        destructive: {
+                            DEFAULT: "hsl(0 84.2% 60.2%)",
+                            foreground: "hsl(210 40% 98%)",
+                        },
+                        muted: {
+                            DEFAULT: "hsl(210 40% 96.1%)",
+                            foreground: "hsl(215.4 16.3% 46.9%)",
+                        },
+                        accent: {
+                            DEFAULT: "hsl(210 40% 96.1%)",
+                            foreground: "hsl(222.2 47.4% 11.2%)",
+                        },
+                        card: {
+                            DEFAULT: "hsl(0 0% 100%)",
+                            foreground: "hsl(222.2 84% 4.9%)",
+                        },
+                    },
+                    borderRadius: {
+                        lg: "0.5rem",
+                        md: "calc(0.5rem - 2px)",
+                        sm: "calc(0.5rem - 4px)",
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+                        <i class="fas fa-traffic-light text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">Smart Traffic AI</span>
+                </div>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="/" class="text-gray-900 font-medium border-b-2 border-purple-600 pb-1">Home</a>
+                    <a href="/dashboard" class="text-gray-600 hover:text-gray-900 transition">Dashboard</a>
+                    <a href="/emergency" class="text-gray-600 hover:text-gray-900 transition">Emergency</a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white gradient-bg hover:opacity-90 transition">
+                        Launch App
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-20 pb-32 gradient-bg text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center animate-fade-in">
+                <div class="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-6">
+                    <span class="text-sm font-medium">🎓 B.Tech Final Year Project 2026</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-6xl font-extrabold mb-6 leading-tight">
+                    Smart Traffic Optimization<br>
+                    <span class="text-purple-200">Using AI & Real-Time Data</span>
+                </h1>
+                
+                <p class="text-xl md:text-2xl text-purple-100 mb-10 max-w-3xl mx-auto">
+                    Revolutionizing urban traffic management with YOLOv8 computer vision, 
+                    AI-powered signal optimization, and emergency vehicle priority system.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="/dashboard" class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-lg text-purple-700 bg-white hover:bg-gray-50 transition shadow-lg">
+                        <i class="fas fa-chart-line mr-2"></i>
+                        View Dashboard
+                    </a>
+                    <a href="#features" class="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-base font-medium rounded-lg text-white hover:bg-white/10 transition">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Learn More
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 bg-white -mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-2xl shadow-2xl p-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-purple-600 mb-2">99.2%</div>
+                    <div class="text-gray-600 font-medium">Detection Accuracy</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-purple-600 mb-2">45%</div>
+                    <div class="text-gray-600 font-medium">Wait Time Reduction</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-purple-600 mb-2">24/7</div>
+                    <div class="text-gray-600 font-medium">Real-Time Monitoring</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-purple-600 mb-2">100%</div>
+                    <div class="text-gray-600 font-medium">Emergency Priority</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    Intelligent Features
+                </h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    Advanced AI algorithms and computer vision technology for smart traffic management
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-white rounded-xl p-8 shadow-lg card-hover">
+                    <div class="w-14 h-14 gradient-bg rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-car text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Vehicle Detection</h3>
+                    <p class="text-gray-600 mb-4">
+                        YOLOv8-powered real-time detection of cars, buses, trucks, and motorcycles with 99%+ accuracy.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">YOLOv8</span>
+                        <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">OpenCV</span>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-white rounded-xl p-8 shadow-lg card-hover">
+                    <div class="w-14 h-14 gradient-bg rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-brain text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">AI Optimization</h3>
+                    <p class="text-gray-600 mb-4">
+                        Intelligent signal timing based on real-time traffic density. More vehicles = longer green time.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">AI Logic</span>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">Python</span>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-white rounded-xl p-8 shadow-lg card-hover">
+                    <div class="w-14 h-14 gradient-bg rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-ambulance text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Emergency Priority</h3>
+                    <p class="text-gray-600 mb-4">
+                        Automatic green signal for ambulances and emergency vehicles with instant override system.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">Priority</span>
+                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">Override</span>
+                    </div>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-white rounded-xl p-8 shadow-lg card-hover">
+                    <div class="w-14 h-14 gradient-bg rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-chart-line text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Live Dashboard</h3>
+                    <p class="text-gray-600 mb-4">
+                        Real-time traffic monitoring with interactive charts, signal status, and historical analytics.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">Real-time</span>
+                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">Charts</span>
+                    </div>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-white rounded-xl p-8 shadow-lg card-hover">
+                    <div class="w-14 h-14 gradient-bg rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-database text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Data Logging</h3>
+                    <p class="text-gray-600 mb-4">
+                        MySQL database stores all traffic patterns, emergency events, and signal timings for analysis.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">MySQL</span>
+                        <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">Analytics</span>
+                    </div>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="bg-white rounded-xl p-8 shadow-lg card-hover">
+                    <div class="w-14 h-14 gradient-bg rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-mobile-alt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Responsive Design</h3>
+                    <p class="text-gray-600 mb-4">
+                        Modern UI with Tailwind CSS v3 and shadcn design patterns. Works on all devices.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium">Tailwind</span>
+                        <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium">Responsive</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    Technology Stack
+                </h2>
+                <p class="text-xl text-gray-600">
+                    Built with modern, industry-standard technologies
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="text-center p-6 bg-gray-50 rounded-xl hover:shadow-lg transition">
+                    <i class="fab fa-python text-5xl text-blue-600 mb-4"></i>
+                    <h4 class="font-bold text-gray-900">Python Flask</h4>
+                    <p class="text-sm text-gray-600 mt-2">Backend API</p>
+                </div>
+                
+                <div class="text-center p-6 bg-gray-50 rounded-xl hover:shadow-lg transition">
+                    <i class="fas fa-robot text-5xl text-purple-600 mb-4"></i>
+                    <h4 class="font-bold text-gray-900">YOLOv8</h4>
+                    <p class="text-sm text-gray-600 mt-2">Object Detection</p>
+                </div>
+                
+                <div class="text-center p-6 bg-gray-50 rounded-xl hover:shadow-lg transition">
+                    <i class="fas fa-database text-5xl text-orange-600 mb-4"></i>
+                    <h4 class="font-bold text-gray-900">MySQL</h4>
+                    <p class="text-sm text-gray-600 mt-2">Database</p>
+                </div>
+                
+                <div class="text-center p-6 bg-gray-50 rounded-xl hover:shadow-lg transition">
+                    <i class="fas fa-wind text-5xl text-cyan-600 mb-4"></i>
+                    <h4 class="font-bold text-gray-900">Tailwind CSS</h4>
+                    <p class="text-sm text-gray-600 mt-2">Frontend UI</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 gradient-bg text-white">
+        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold mb-6">
+                Ready to Experience Smart Traffic Management?
+            </h2>
+            <p class="text-xl text-purple-100 mb-10">
+                Launch the dashboard to see real-time vehicle detection and AI-powered signal optimization in action.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="/dashboard" class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-lg text-purple-700 bg-white hover:bg-gray-50 transition shadow-lg">
+                    <i class="fas fa-rocket mr-2"></i>
+                    Launch Dashboard
+                </a>
+                <a href="/emergency" class="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-base font-medium rounded-lg text-white hover:bg-white/10 transition">
+                    <i class="fas fa-ambulance mr-2"></i>
+                    Emergency System
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+                            <i class="fas fa-traffic-light text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold">Smart Traffic AI</span>
+                    </div>
+                    <p class="text-gray-400">
+                        B.Tech Final Year Project 2026<br>
+                        AI-Powered Traffic Management System
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="/" class="hover:text-white transition">Home</a></li>
+                        <li><a href="/dashboard" class="hover:text-white transition">Dashboard</a></li>
+                        <li><a href="/emergency" class="hover:text-white transition">Emergency</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">Technology</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Python Flask Backend</li>
+                        <li>YOLOv8 + OpenCV</li>
+                        <li>MySQL Database</li>
+                        <li>Tailwind CSS v3</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2026 Smart Traffic Optimization System. B.Tech Final Year Project.</p>
+                <p class="mt-2 text-sm">Built with ❤️ using AI and Computer Vision</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

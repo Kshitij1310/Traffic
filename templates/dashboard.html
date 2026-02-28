@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Dashboard | Smart Traffic AI</title>
+    
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* Traffic Light Animations */
+        .traffic-light {
+            width: 60px;
+            height: 180px;
+            background: #2d3748;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .light {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 5px auto;
+            opacity: 0.3;
+            transition: all 0.3s ease;
+        }
+        
+        .light.active {
+            opacity: 1;
+            box-shadow: 0 0 20px currentColor;
+        }
+        
+        .light-red { background: #ef4444; }
+        .light-yellow { background: #fbbf24; }
+        .light-green { background: #10b981; }
+        
+        /* Pulse Animation */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        /* Card Hover Effect */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+                        <i class="fas fa-traffic-light text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">Smart Traffic AI</span>
+                </div>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="/" class="text-gray-600 hover:text-gray-900 transition">Home</a>
+                    <a href="/dashboard" class="text-gray-900 font-medium border-b-2 border-purple-600 pb-1">Dashboard</a>
+                    <a href="/emergency" class="text-gray-600 hover:text-gray-900 transition">Emergency</a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button onclick="simulateTraffic()" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition">
+                        <i class="fas fa-random mr-2"></i>
+                        Simulate
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Traffic Monitoring Dashboard</h1>
+            <p class="text-gray-600">Real-time vehicle detection and AI-powered signal optimization</p>
+        </div>
+
+        <!-- Alert Bar -->
+        <div id="alertBar" class="hidden mb-6 p-4 rounded-lg border-l-4">
+            <div class="flex items-center">
+                <i id="alertIcon" class="fas fa-exclamation-circle text-xl mr-3"></i>
+                <div>
+                    <p id="alertTitle" class="font-semibold"></p>
+                    <p id="alertMessage" class="text-sm"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Vehicles -->
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-car text-blue-600 text-xl"></i>
+                    </div>
+                    <span class="text-sm text-gray-500">Total</span>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-900 mb-1" id="totalVehicles">0</h3>
+                <p class="text-sm text-gray-600">Vehicles Detected</p>
+            </div>
+
+            <!-- Active Lane -->
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-road text-green-600 text-xl"></i>
+                    </div>
+                    <span class="text-sm text-gray-500">Active</span>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-900 mb-1" id="activeLane">-</h3>
+                <p class="text-sm text-gray-600">Current Green Lane</p>
+            </div>
+
+            <!-- Emergency Status -->
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-ambulance text-red-600 text-xl"></i>
+                    </div>
+                    <span class="text-sm text-gray-500">Status</span>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-900 mb-1" id="emergencyStatus">Normal</h3>
+                <p class="text-sm text-gray-600">Emergency Mode</p>
+            </div>
+
+            <!-- Avg Wait Time -->
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-clock text-purple-600 text-xl"></i>
+                    </div>
+                    <span class="text-sm text-gray-500">Average</span>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-900 mb-1" id="avgWaitTime">0</h3>
+                <p class="text-sm text-gray-600">Second Wait Time</p>
+            </div>
+        </div>
+
+        <!-- Live Countdown -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                    <p class="text-sm text-gray-500">Active Green Countdown</p>
+                    <p class="text-2xl font-bold text-gray-900">
+                        <span id="currentGreenLane">Lane 1</span>
+                        <span class="text-gray-400"> · </span>
+                        <span id="currentCountdown">0</span>s
+                    </p>
+                </div>
+                <div class="text-sm text-gray-600">
+                    Vehicles in green lane: <span id="currentVehicleCount" class="font-semibold text-gray-900">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Traffic Lights & Lane Info -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            
+            <!-- Traffic Signals Visualization -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-6">Live Traffic Signals</h2>
+                
+                <div class="grid grid-cols-4 gap-4">
+                    <!-- Lane 1 -->
+                    <div class="text-center">
+                        <div class="traffic-light mx-auto mb-3">
+                            <div class="light light-red" id="lane1-red"></div>
+                            <div class="light light-yellow" id="lane1-yellow"></div>
+                            <div class="light light-green" id="lane1-green"></div>
+                        </div>
+                        <p class="font-semibold text-gray-900">Lane 1</p>
+                        <p class="text-sm text-gray-600"><span id="lane1-count">0</span> vehicles</p>
+                        <p class="text-xs text-gray-500"><span id="lane1-timer">0</span>s</p>
+                    </div>
+
+                    <!-- Lane 2 -->
+                    <div class="text-center">
+                        <div class="traffic-light mx-auto mb-3">
+                            <div class="light light-red" id="lane2-red"></div>
+                            <div class="light light-yellow" id="lane2-yellow"></div>
+                            <div class="light light-green" id="lane2-green"></div>
+                        </div>
+                        <p class="font-semibold text-gray-900">Lane 2</p>
+                        <p class="text-sm text-gray-600"><span id="lane2-count">0</span> vehicles</p>
+                        <p class="text-xs text-gray-500"><span id="lane2-timer">0</span>s</p>
+                    </div>
+
+                    <!-- Lane 3 -->
+                    <div class="text-center">
+                        <div class="traffic-light mx-auto mb-3">
+                            <div class="light light-red" id="lane3-red"></div>
+                            <div class="light light-yellow" id="lane3-yellow"></div>
+                            <div class="light light-green" id="lane3-green"></div>
+                        </div>
+                        <p class="font-semibold text-gray-900">Lane 3</p>
+                        <p class="text-sm text-gray-600"><span id="lane3-count">0</span> vehicles</p>
+                        <p class="text-xs text-gray-500"><span id="lane3-timer">0</span>s</p>
+                    </div>
+
+                    <!-- Lane 4 -->
+                    <div class="text-center">
+                        <div class="traffic-light mx-auto mb-3">
+                            <div class="light light-red" id="lane4-red"></div>
+                            <div class="light light-yellow" id="lane4-yellow"></div>
+                            <div class="light light-green" id="lane4-green"></div>
+                        </div>
+                        <p class="font-semibold text-gray-900">Lane 4</p>
+                        <p class="text-sm text-gray-600"><span id="lane4-count">0</span> vehicles</p>
+                        <p class="text-xs text-gray-500"><span id="lane4-timer">0</span>s</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Optimization Info -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-6">AI Signal Optimization</h2>
+                
+                <div class="space-y-4">
+                    <!-- Lane Rankings -->
+                    <div>
+                        <h3 class="font-semibold text-gray-700 mb-3">Traffic Density Ranking</h3>
+                        <div id="laneRanking" class="space-y-2">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+
+                    <!-- Optimization Rules -->
+                    <div class="mt-6 p-4 bg-purple-50 rounded-lg">
+                        <h3 class="font-semibold text-purple-900 mb-2">
+                            <i class="fas fa-lightbulb mr-2"></i>
+                            Optimization Rules
+                        </h3>
+                        <ul class="text-sm text-purple-800 space-y-1">
+                            <li>• green_time = 10 + (vehicle_count × 2)</li>
+                            <li>• Countdown decreases every second</li>
+                            <li>• When timer hits 0, next lane turns green</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            
+            <!-- Traffic Trend Chart -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Traffic Trend (Last Hour)</h2>
+                <canvas id="trafficTrendChart"></canvas>
+            </div>
+
+            <!-- Vehicle Distribution -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Lane Distribution</h2>
+                <canvas id="laneDistributionChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Vehicle Detection Section -->
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Vehicle Detection</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Upload Section -->
+                <div>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-500 transition">
+                        <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Upload Traffic Image</h3>
+                        <p class="text-sm text-gray-600 mb-4">
+                            Upload an image for vehicle detection
+                        </p>
+                        
+                        <input type="file" id="imageUpload" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                        <label for="imageUpload" class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-md text-white gradient-bg hover:opacity-90 transition cursor-pointer">
+                            <i class="fas fa-upload mr-2"></i>
+                            Choose Image
+                        </label>
+                        
+                        <div class="mt-4">
+                            <select id="laneSelect" class="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                <option value="lane1">Lane 1</option>
+                                <option value="lane2">Lane 2</option>
+                                <option value="lane3">Lane 3</option>
+                                <option value="lane4">Lane 4</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button onclick="detectFromWebcam()" class="w-full inline-flex items-center justify-center px-6 py-3 border-2 border-purple-600 text-sm font-medium rounded-md text-purple-600 hover:bg-purple-50 transition">
+                            <i class="fas fa-camera mr-2"></i>
+                            Detect from Webcam
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div>
+                    <div id="detectionResults" class="hidden">
+                        <h3 class="font-semibold text-gray-900 mb-4">Detection Results</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span class="text-gray-700">
+                                    <i class="fas fa-car mr-2 text-blue-600"></i>Cars
+                                </span>
+                                <span id="carCount" class="font-bold text-gray-900">0</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span class="text-gray-700">
+                                    <i class="fas fa-bus mr-2 text-green-600"></i>Buses
+                                </span>
+                                <span id="busCount" class="font-bold text-gray-900">0</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span class="text-gray-700">
+                                    <i class="fas fa-truck mr-2 text-orange-600"></i>Trucks
+                                </span>
+                                <span id="truckCount" class="font-bold text-gray-900">0</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span class="text-gray-700">
+                                    <i class="fas fa-motorcycle mr-2 text-red-600"></i>Motorcycles
+                                </span>
+                                <span id="bikeCount" class="font-bold text-gray-900">0</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-purple-100 rounded-lg mt-4">
+                                <span class="font-semibold text-purple-900">Total Vehicles</span>
+                                <span id="totalDetected" class="font-bold text-purple-900 text-xl">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/static/js/script.js"></script>
+    
+    <script>
+        // Initialize Dashboard
+        let trafficChart, distributionChart;
+        
+        // Initialize Charts
+        function initializeCharts() {
+            // Traffic Trend Chart
+            const trendCtx = document.getElementById('trafficTrendChart').getContext('2d');
+            trafficChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Total Vehicles',
+                        data: [],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 10
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Lane Distribution Chart
+            const distCtx = document.getElementById('laneDistributionChart').getContext('2d');
+            distributionChart = new Chart(distCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Lane 1', 'Lane 2', 'Lane 3', 'Lane 4'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: [
+                            '#667eea',
+                            '#10b981',
+                            '#f59e0b',
+                            '#ef4444'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            updateDashboard();
+            
+            // Auto-refresh every 5 seconds
+            setInterval(updateDashboard, 5000);
+        });
+    </script>
+
+</body>
+</html>

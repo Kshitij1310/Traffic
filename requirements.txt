@@ -1,0 +1,53 @@
+# ============================================================
+# Smart Traffic Optimization System - Python Dependencies
+# B.Tech Final Year Project
+# ============================================================
+
+# Web Framework
+Flask==3.0.0
+Werkzeug==3.0.1
+
+# Database
+mysql-connector-python==8.2.0
+
+# Computer Vision & AI
+opencv-python>=4.9.0.80
+opencv-contrib-python>=4.9.0.80
+ultralytics>=8.1.0
+torch>=2.1.0
+torchvision>=0.16.0
+
+# Image Processing
+Pillow>=10.2.0
+numpy>=1.26.0
+
+# Utilities
+python-dotenv==1.0.0
+requests==2.31.0
+
+# CORS Support (if needed)
+flask-cors==4.0.0
+
+# ============================================================
+# Installation Instructions:
+# ============================================================
+# 
+# 1. Create virtual environment (recommended):
+#    python -m venv venv
+#    
+# 2. Activate virtual environment:
+#    Windows: venv\Scripts\activate
+#    Linux/Mac: source venv/bin/activate
+#    
+# 3. Install dependencies:
+#    pip install -r requirements.txt
+#    
+# 4. YOLOv8 model will auto-download on first run
+#    
+# ============================================================
+
+# Notes:
+# - torch and torchvision are required for YOLOv8
+# - OpenCV is needed for video/image processing
+# - MySQL connector for database operations
+# - Ultralytics provides YOLOv8 model

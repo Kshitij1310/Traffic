@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Vehicle Priority | Smart Traffic AI</title>
+    
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* Emergency Flash Animation */
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .emergency-flash {
+            animation: flash 1s ease-in-out infinite;
+        }
+        
+        /* Pulse Animation */
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+        
+        .pulse-ring {
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+                        <i class="fas fa-traffic-light text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">Smart Traffic AI</span>
+                </div>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="/" class="text-gray-600 hover:text-gray-900 transition">Home</a>
+                    <a href="/dashboard" class="text-gray-600 hover:text-gray-900 transition">Dashboard</a>
+                    <a href="/emergency" class="text-gray-900 font-medium border-b-2 border-red-600 pb-1">Emergency</a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition">
+                        <i class="fas fa-chart-line mr-2"></i>
+                        Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                <i class="fas fa-ambulance text-red-600 mr-2"></i>
+                Emergency Vehicle Priority System
+            </h1>
+            <p class="text-gray-600">Automated green signal for ambulances and emergency vehicles</p>
+        </div>
+
+        <!-- Emergency Status Alert -->
+        <div id="emergencyAlert" class="hidden mb-8">
+            <div class="bg-red-50 border-l-4 border-red-600 p-6 rounded-lg emergency-flash">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-3xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-bold text-red-900">EMERGENCY OVERRIDE ACTIVE</h3>
+                        <p class="text-red-800 mt-1">
+                            <span id="emergencyLaneDisplay"></span> has priority green signal
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Control Panel -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            
+            <!-- Activate Emergency Mode -->
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-siren-on text-red-600 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Activate Emergency</h2>
+                        <p class="text-sm text-gray-600">Override traffic signals</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Select Emergency Lane
+                        </label>
+                        <select id="emergencyLaneSelect" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                            <option value="lane1">Lane 1 - North</option>
+                            <option value="lane2">Lane 2 - East</option>
+                            <option value="lane3">Lane 3 - South</option>
+                            <option value="lane4">Lane 4 - West</option>
+                        </select>
+                    </div>
+
+                    <button onclick="activateEmergency()" class="w-full flex items-center justify-center px-6 py-4 border border-transparent text-base font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition shadow-lg">
+                        <i class="fas fa-play-circle mr-2 text-xl"></i>
+                        ACTIVATE EMERGENCY MODE
+                    </button>
+
+                    <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p class="text-sm text-yellow-800">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            This will immediately turn all signals red except the selected lane
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deactivate Emergency Mode -->
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Deactivate Emergency</h2>
+                        <p class="text-sm text-gray-600">Resume normal operation</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="text-center py-8">
+                        <div class="relative inline-block">
+                            <div id="statusIndicator" class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-traffic-light text-green-600 text-4xl"></i>
+                            </div>
+                            <div id="pulseRing" class="hidden absolute top-0 left-0 w-24 h-24 bg-red-400 rounded-full pulse-ring"></div>
+                        </div>
+                        <p id="statusText" class="mt-4 text-lg font-semibold text-green-600">System Normal</p>
+                    </div>
+
+                    <button onclick="deactivateEmergency()" class="w-full flex items-center justify-center px-6 py-4 border-2 border-green-600 text-base font-medium rounded-lg text-green-600 hover:bg-green-50 transition">
+                        <i class="fas fa-stop-circle mr-2 text-xl"></i>
+                        DEACTIVATE EMERGENCY MODE
+                    </button>
+
+                    <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p class="text-sm text-blue-800">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            System will resume AI-based traffic optimization
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Statistics -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Today's Emergencies -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-calendar-day text-red-600 text-xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-900 mb-1" id="todayEmergencies">0</h3>
+                <p class="text-sm text-gray-600">Today's Emergencies</p>
+            </div>
+
+            <!-- Average Response Time -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-stopwatch text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-900 mb-1">2.3s</h3>
+                <p class="text-sm text-gray-600">Avg Response Time</p>
+            </div>
+
+            <!-- Success Rate -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-check-double text-green-600 text-xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-900 mb-1">100%</h3>
+                <p class="text-sm text-gray-600">Success Rate</p>
+            </div>
+        </div>
+
+        <!-- Emergency History -->
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Emergency Vehicle Detection History</h2>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                ID
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Timestamp
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="emergencyHistoryTable" class="bg-white divide-y divide-gray-200">
+                        <!-- Dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Emergency Instructions -->
+        <div class="mt-8 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl shadow-md p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                <i class="fas fa-book-open text-red-600 mr-3"></i>
+                How Emergency Priority Works
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                        <span class="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center mr-3">1</span>
+                        Detection
+                    </h3>
+                    <p class="text-gray-700 ml-11">
+                        System detects emergency vehicles using YOLOv8 or manual activation through this interface
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                        <span class="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center mr-3">2</span>
+                        Override
+                    </h3>
+                    <p class="text-gray-700 ml-11">
+                        All traffic signals immediately turn red, emergency lane gets green signal
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                        <span class="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center mr-3">3</span>
+                        Priority Timer
+                    </h3>
+                    <p class="text-gray-700 ml-11">
+                        Emergency lane remains green for 90 seconds to ensure safe passage
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                        <span class="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center mr-3">4</span>
+                        Resume Normal
+                    </h3>
+                    <p class="text-gray-700 ml-11">
+                        After deactivation, system resumes AI-based optimization automatically
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        let isEmergencyActive = false;
+
+        // Activate Emergency Mode
+        async function activateEmergency() {
+            const laneId = document.getElementById('emergencyLaneSelect').value;
+            
+            try {
+                const response = await fetch('/api/emergency-override', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        lane_id: laneId,
+                        detected: true
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    isEmergencyActive = true;
+                    updateEmergencyUI(true, laneId);
+                    showNotification('Emergency Mode Activated', `${laneId.toUpperCase()} has green signal`, 'success');
+                }
+            } catch (error) {
+                console.error('Error activating emergency:', error);
+                showNotification('Error', 'Failed to activate emergency mode', 'error');
+            }
+        }
+
+        // Deactivate Emergency Mode
+        async function deactivateEmergency() {
+            try {
+                const response = await fetch('/api/emergency-override', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        detected: false
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    isEmergencyActive = false;
+                    updateEmergencyUI(false);
+                    showNotification('Emergency Deactivated', 'Normal traffic flow resumed', 'success');
+                }
+            } catch (error) {
+                console.error('Error deactivating emergency:', error);
+                showNotification('Error', 'Failed to deactivate emergency mode', 'error');
+            }
+        }
+
+        // Update UI based on emergency status
+        function updateEmergencyUI(active, laneId = null) {
+            const alert = document.getElementById('emergencyAlert');
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const pulseRing = document.getElementById('pulseRing');
+
+            if (active) {
+                alert.classList.remove('hidden');
+                document.getElementById('emergencyLaneDisplay').textContent = laneId.toUpperCase();
+                
+                statusIndicator.classList.remove('bg-green-100');
+                statusIndicator.classList.add('bg-red-100');
+                statusIndicator.querySelector('i').classList.remove('text-green-600');
+                statusIndicator.querySelector('i').classList.add('text-red-600');
+                
+                statusText.textContent = 'EMERGENCY ACTIVE';
+                statusText.classList.remove('text-green-600');
+                statusText.classList.add('text-red-600');
+                
+                pulseRing.classList.remove('hidden');
+            } else {
+                alert.classList.add('hidden');
+                
+                statusIndicator.classList.remove('bg-red-100');
+                statusIndicator.classList.add('bg-green-100');
+                statusIndicator.querySelector('i').classList.remove('text-red-600');
+                statusIndicator.querySelector('i').classList.add('text-green-600');
+                
+                statusText.textContent = 'System Normal';
+                statusText.classList.remove('text-red-600');
+                statusText.classList.add('text-green-600');
+                
+                pulseRing.classList.add('hidden');
+            }
+        }
+
+        // Show notification
+        function showNotification(title, message, type) {
+            const colors = {
+                success: 'bg-green-50 border-green-500 text-green-800',
+                error: 'bg-red-50 border-red-500 text-red-800',
+                info: 'bg-blue-50 border-blue-500 text-blue-800'
+            };
+
+            const notification = document.createElement('div');
+            notification.className = `fixed top-20 right-4 ${colors[type]} border-l-4 p-4 rounded-lg shadow-lg max-w-md z-50`;
+            notification.innerHTML = `
+                <div class="flex items-start">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} text-xl mr-3"></i>
+                    <div>
+                        <h4 class="font-bold">${title}</h4>
+                        <p class="text-sm mt-1">${message}</p>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Load emergency history
+        async function loadEmergencyHistory() {
+            try {
+                const response = await fetch('/api/emergency-history');
+                const data = await response.json();
+
+                if (data.success) {
+                    const tbody = document.getElementById('emergencyHistoryTable');
+                    tbody.innerHTML = '';
+
+                    data.data.forEach((record, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                ${record.id}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                ${record.timestamp}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${record.detected ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                                    ${record.detected ? 'Emergency Detected' : 'Normal'}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                ${record.detected ? 'Override Activated' : 'System Normal'}
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    // Update today's count
+                    const today = data.data.filter(r => r.detected && r.timestamp.startsWith(new Date().toISOString().split('T')[0]));
+                    document.getElementById('todayEmergencies').textContent = today.length;
+                }
+            } catch (error) {
+                console.error('Error loading emergency history:', error);
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEmergencyHistory();
+            
+            // Auto-refresh every 10 seconds
+            setInterval(loadEmergencyHistory, 10000);
+        });
+    </script>
+
+</body>
+</html>
